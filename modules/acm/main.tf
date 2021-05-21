@@ -54,7 +54,7 @@ module "acm_operator" {
   service_account_key_file = var.service_account_key_file
   use_existing_context     = var.use_existing_context
   git_access_token         = var.git_access_token
-  git_access_token_username = var.git_access_token_username
+  git_access_username      = var.git_access_token_username
 
   operator_latest_manifest_url  = "gs://config-management-release/released/latest/config-management-operator.yaml"
   operator_cr_template_path     = "${path.module}/templates/acm-config.yml.tpl"
