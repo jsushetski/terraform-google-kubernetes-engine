@@ -127,3 +127,15 @@ variable "use_existing_context" {
   type        = bool
   default     = false
 }
+
+variable "git_access_token" {
+  description = ""
+  type        = string
+  default     = null
+}
+
+variable "git_access_username" {
+  description = ""
+  type        = string
+  default     = null
+}
