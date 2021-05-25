@@ -70,7 +70,7 @@ module "k8sop_creds_secret" {
   source  = "terraform-google-modules/gcloud/google//modules/kubectl-wrapper"
   version = "~> 2.1.0"
 
-  enabled                     = var.create_ssh_key == true || var.ssh_auth_key != null ? "true" : "false"
+  enabled                     = var.create_ssh_key == true || var.ssh_auth_key != null || var.git_access_token != null ? "true" : "false"
   module_depends_on           = [module.k8s_operator.wait]
   cluster_name                = var.cluster_name
   cluster_location            = var.location
@@ -79,8 +79,7 @@ module "k8sop_creds_secret" {
   use_existing_context        = var.use_existing_context
   impersonate_service_account = var.impersonate_service_account
 
-  #kubectl_create_command  = local.private_key != null ? "kubectl create secret generic ${var.operator_credential_name} -n=${var.operator_credential_namespace} --from-literal=${local.k8sop_creds_secret_key}='${local.private_key}'" : var.secret_type == "token" && var.git_access_token != null && var.git_access_username != null ? "kubectl create secret generic ${var.operator_credential_name} -n=${var.operator_credential_namespace} --from-literal=${var.secret_type}='${var.git_access_token}' --from-literal=username='${var.git_access_username}'" : ""
-  kubectl_create_command  = local.private_key != null ? "kubectl create secret generic ${var.operator_credential_name} -n=${var.operator_credential_namespace} --from-literal=${local.k8sop_creds_secret_key}='${local.private_key}'" : var.secret_type == "token" ? "kubectl create secret generic ${var.operator_credential_name} -n=${var.operator_credential_namespace} --from-literal=${var.secret_type}='${var.git_access_token}' --from-literal=username='${var.git_access_username}'" : ""
+  kubectl_create_command  = local.private_key != null ? "kubectl create secret generic ${var.operator_credential_name} -n=${var.operator_credential_namespace} --from-literal=${local.k8sop_creds_secret_key}='${local.private_key}'" : var.secret_type == "token" && var.git_access_token != null && var.git_access_username != null ? "kubectl create secret generic ${var.operator_credential_name} -n=${var.operator_credential_namespace} --from-literal=${var.secret_type}='${var.git_access_token}' --from-literal=username='${var.git_access_username}'" : ""
   kubectl_destroy_command = "kubectl delete secret ${var.operator_credential_name} -n=${var.operator_credential_namespace}"
 }
 
