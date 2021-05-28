@@ -30,6 +30,7 @@ locals {
   hierarchy_controller_map_node   = var.hierarchy_controller == null ? "" : format("hierarchyController:\n    %s", indent(4, replace(yamlencode(var.hierarchy_controller), "/((?:^|\n)[\\s-]*)\"([\\w-]+)\":/", "$1$2:")))
   source_format_node              = var.source_format != "" ? format("sourceFormat: %s", var.source_format) : ""
   append_arg_use_existing_context = var.use_existing_context ? "USE_EXISTING_CONTEXT_ARG" : ""
+  k8sop_creds_secret_literals     = local.private_key != null ? "--from-literal=${local.k8sop_creds_secret_key}='${local.private_key}'" : "--from-literal=${var.secret_type}='${var.git_token}' --from-literal=username='${var.git_username}'"
 }
 
 module "k8sop_manifest" {
@@ -70,7 +71,7 @@ module "k8sop_creds_secret" {
   source  = "terraform-google-modules/gcloud/google//modules/kubectl-wrapper"
   version = "~> 2.1.0"
 
-  enabled                     = var.create_ssh_key == true || var.ssh_auth_key != null || var.git_token != null ? "true" : "false"
+  enabled                     = var.create_ssh_key == true || var.ssh_auth_key != null || var.secret_type == "token" ? "true" : "false"
   module_depends_on           = [module.k8s_operator.wait]
   cluster_name                = var.cluster_name
   cluster_location            = var.location
@@ -79,7 +80,8 @@ module "k8sop_creds_secret" {
   use_existing_context        = var.use_existing_context
   impersonate_service_account = var.impersonate_service_account
 
-  kubectl_create_command  = local.private_key != null ? "kubectl create secret generic ${var.operator_credential_name} -n=${var.operator_credential_namespace} --from-literal=${local.k8sop_creds_secret_key}='${local.private_key}'" : var.secret_type == "token" && var.git_token != null && var.git_username != null ? "kubectl create secret generic ${var.operator_credential_name} -n=${var.operator_credential_namespace} --from-literal=${var.secret_type}='${var.git_token}' --from-literal=username='${var.git_username}'" : ""
+  #kubectl_create_command  = local.private_key != null ? "kubectl create secret generic ${var.operator_credential_name} -n=${var.operator_credential_namespace} --from-literal=${local.k8sop_creds_secret_key}='${local.private_key}'" : var.secret_type == "token" && var.git_token != null && var.git_username != null ? "kubectl create secret generic ${var.operator_credential_name} -n=${var.operator_credential_namespace} --from-literal=${var.secret_type}='${var.git_token}' --from-literal=username='${var.git_username}'" : ""
+  kubectl_create_command  = local.private_key != null || var.secret_type == "token" ? "kubectl create secret generic ${var.operator_credential_name} -n=${var.operator_credential_namespace} ${local.k8sop_creds_secret_literals}" : ""
   kubectl_destroy_command = "kubectl delete secret ${var.operator_credential_name} -n=${var.operator_credential_namespace}"
 }
 
