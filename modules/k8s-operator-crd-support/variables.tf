@@ -169,13 +169,13 @@ variable "impersonate_service_account" {
   default     = ""
 }
 
-variable "git_access_token" {
+variable "git_token" {
   description = ""
   type        = string
   default     = null
 }
 
-variable "git_access_username" {
+variable "git_username" {
   description = ""
   type        = string
   default     = null
