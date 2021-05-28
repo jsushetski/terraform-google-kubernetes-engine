@@ -30,7 +30,7 @@ locals {
   hierarchy_controller_map_node   = var.hierarchy_controller == null ? "" : format("hierarchyController:\n    %s", indent(4, replace(yamlencode(var.hierarchy_controller), "/((?:^|\n)[\\s-]*)\"([\\w-]+)\":/", "$1$2:")))
   source_format_node              = var.source_format != "" ? format("sourceFormat: %s", var.source_format) : ""
   append_arg_use_existing_context = var.use_existing_context ? "USE_EXISTING_CONTEXT_ARG" : ""
-  k8sop_creds_secret_literals     = local.private_key != null ? "--from-literal=${local.k8sop_creds_secret_key}='${local.private_key}'" : "--from-literal=${var.secret_type}='${var.git_token}' --from-literal=username='${var.git_username}'"
+  k8sop_creds_secret_literals     = var.secret_type == "ssh" ? "--from-literal=${local.k8sop_creds_secret_key}='${local.private_key}'" : "--from-literal=${var.secret_type}='${var.git_token}' --from-literal=username='${var.git_username}'"
 }
 
 module "k8sop_manifest" {
