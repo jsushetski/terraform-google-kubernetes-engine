@@ -170,14 +170,14 @@ variable "impersonate_service_account" {
 }
 
 variable "git_token" {
-  description = ""
+  description = "Token for token-based git access."
   type        = string
   default     = null
   sensitive   = true
 }
 
 variable "git_username" {
-  description = ""
+  description = "Username for token-based git access."
   type        = string
   default     = null
   sensitive   = true
