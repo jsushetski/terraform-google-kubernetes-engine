@@ -65,6 +65,8 @@ By default, this module will attempt to download the ACM operator from Google di
 | sync\_repo | ACM Git repo address | `string` | n/a | yes |
 | sync\_revision | ACM repo Git revision. If un-set, uses Config Management default. | `string` | `""` | no |
 | use\_existing\_context | Use existing kubecontext to auth kube-api. | `bool` | `false` | no |
+| git\_token | Token for token-based authentication to git. | `string` | `null` | no |
+| git\_username | Username for token-based authentication to git. | `string` | `null` | no |
 
 ## Outputs
 
